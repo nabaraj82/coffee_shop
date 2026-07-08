@@ -3,7 +3,9 @@ import BgImage from "../../assets/bg-slate.png";
 import BlackCoffee from "../../assets/black.png";
 import Navbar from "../navbar/Navbar";
 import { motion, AnimatePresence } from "framer-motion";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useGetPaymentsMethods } from "../../hooks/useGetPaymentsMethods";
+import CheckoutDialog from "../CheckoutDialog";
 const bgImage = {
   backgroundImage: `url(${BgImage})`,
   backgroundSize: "cover",
@@ -14,7 +16,14 @@ const bgImage = {
 };
 const Hero = () => {
   const [sidebar, setSidebar] = useState(false);
-  console.log("sidebar: ", sidebar);
+  const [checkoutOpen, setCheckoutOpen] = useState(false);
+
+  // const [paymentMethods, setPaymentMethods] = useState([]);
+
+
+
+
+
   return (
     <main style={bgImage} className="min-h-screen">
       <section className="relative min-h-[750px] w-full">
@@ -55,6 +64,12 @@ const Hero = () => {
                     ipsa cum et suscipit earum omnis sunt ullam. Aperiam
                     aspernatur quos sed natus soluta?
                   </p>
+                  <button
+                    onClick={() => setCheckoutOpen(true)}
+                    className="mt-4 inline-flex items-center justify-center rounded-full bg-primary px-6 py-3 text-sm font-semibold text-white transition hover:bg-primaryDark"
+                  >
+                    Buy Now
+                  </button>
                 </div>
                 <div className="absolute -top-6 -left-10 w-[250px] h-[190px] bg-gray-700/25"></div>
               </motion.div>
@@ -131,8 +146,9 @@ const Hero = () => {
               </div>
             </motion.div>
           </div>
-
         </div>
+        {/* checkout dialog */}
+       <CheckoutDialog checkoutOpen={checkoutOpen} setCheckoutOpen={setCheckoutOpen} />
         {/* sidebar menu section */}
         <AnimatePresence>
           {sidebar && (
