@@ -2,12 +2,14 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import "./index.css";
 import App from "./App";
+import { SpeedInsights } from "@vercel/speed-insights/next"
 
 const container = document.getElementById("root");
 
 if (container) {
   createRoot(container).render(
     <StrictMode>
+      <SpeedInsights/>
       <App />
     </StrictMode>,
   );
