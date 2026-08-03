@@ -23,13 +23,13 @@ function CheckoutDialog({
     generating,
     error: signatureError,
   } = useGenerateSignature({
-    merchantId: "12",
+    merchantId: "1",
     orderId: "BLN-01",
-    merchantName: "Test Company",
+    merchantName: "UPG TEST LIVE Merchant",
     amount: 310,
     paymentMethod,
     description: "Payment for order #123",
-    merchantCustomerName: "Dummy user",
+    merchantCustomerName: "JHON DOE",
     merchantCustomerPhoneNumber: "9800000000",
   });
 

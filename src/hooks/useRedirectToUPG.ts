@@ -44,7 +44,7 @@ export const useRedirectToUPG = (
         setRedirecting(true);
         const form = document.createElement("form");
         form.method = "POST";
-        form.action = "http://10.14.151.13:9090/api/upg/checkout";
+        form.action = `${import.meta.env.VITE_API_BASE_URL}/api/upg/checkout`;
         form.enctype = "application/x-www-form-urlencoded";
         form.target = "_self";
         form.style.display = "none";

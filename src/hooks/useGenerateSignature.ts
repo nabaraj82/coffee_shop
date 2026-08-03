@@ -9,17 +9,20 @@ async function generateSignature(payload: PayloadSignature, abort: boolean): Pro
     }
     let timer;
     if (!abort) {
-         timer = setTimeout(() => controller.abort(), 8000);
+        timer = setTimeout(() => controller.abort(), 8000);
     }
     try {
-        const response = await fetch("http://10.14.151.13:9090/api/upg/generate-signature", {
-            method: "POST",
-            signal: controller.signal,
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(payload)
-        });
+        const response = await fetch(
+            `${import.meta.env.VITE_API_BASE_URL}/api/upg/generate-signature`,
+            {
+                method: "POST",
+                signal: controller.signal,
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(payload)
+            }
+        );
         if (!response.ok) {
             let message = `Request failed with status ${response.status}`;
             try {
@@ -60,7 +63,7 @@ export const useGenerateSignature = (payload: PayloadSignature) => {
                 setError(null);
                 try {
                     const result = await generateSignature(payload, cancelled);
-                    if(!cancelled) setSignature(result)
+                    if (!cancelled) setSignature(result)
                 } catch (error: unknown) {
                     if (!cancelled) {
                         setError(error instanceof ApiError ? error.message : "Unknown error occured");
@@ -76,5 +79,5 @@ export const useGenerateSignature = (payload: PayloadSignature) => {
         }
     }, [payload.paymentMethod])
 
-    return {signature, generating, error}
+    return { signature, generating, error }
 }

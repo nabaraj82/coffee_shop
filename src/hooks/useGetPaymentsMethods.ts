@@ -4,18 +4,21 @@ import { ApiError } from "../utils/ApiError";
 
 
 
-    const fetchPaymentMethods = async (): Promise<PaymentsMethod[]> => {
-        const controller = new AbortController();
-        const timer = setTimeout(() => controller.abort(), 8000); // 8 seconds timeout
+const fetchPaymentMethods = async (): Promise<PaymentsMethod[]> => {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 8000); // 8 seconds timeout
     try {
-        const response = await fetch("http://10.14.151.13:9090/api/upg/payment-methods", {signal: controller.signal});
+        const response = await fetch(
+            `${import.meta.env.VITE_API_BASE_URL}/api/upg/payment-methods`,
+            { signal: controller.signal }
+        );
         if (!response.ok) {
             let message = `Request failed with status ${response.status}`;
             try {
                 const errBody = await response.json();
                 message = errBody.message || message;
             } catch (error) {
-                
+
             }
             throw new ApiError(message, response.status);
         }
@@ -25,23 +28,23 @@ import { ApiError } from "../utils/ApiError";
         } catch {
             throw new ApiError('Invalid response format', response.status)
         }
-    } catch (error: unknown ) {
+    } catch (error: unknown) {
         if (error instanceof DOMException && error.name === 'AbortError') {
-            
+
         }
         if (error instanceof ApiError) throw error;
         throw new ApiError('Network error - check your connection', 0);
     } finally {
         clearTimeout(timer)
     }
-}  
+}
 
 export const useGetPaymentsMethods = (): UseGetPaymentMethodsResult => {
 
     const [data, setData] = useState<PaymentsMethod[] | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
-  
+
     useEffect(() => {
         let cancelled = false;
         const load = async () => {
@@ -64,6 +67,6 @@ export const useGetPaymentsMethods = (): UseGetPaymentMethodsResult => {
         }
     }, []);
 
-    return {data, loading, error}
+    return { data, loading, error }
 
 }

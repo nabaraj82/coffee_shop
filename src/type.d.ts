@@ -25,6 +25,29 @@ export interface PayloadSignature {
 export interface PayloadRedirectToUPG extends PayloadSignature {
     signature: string;
 }
+
+export interface TransactionStatusData {
+    paymentMethod?: string;
+    totalAmount?: number;
+    orderId?: string;
+    merchantTxnId?: string;
+    instrumentCode?: string;
+    transactionStatus?: string;
+    [key: string]: any;
+}
+
+export interface TransactionCheckResponse {
+    status: number;
+    message: string;
+    data: TransactionStatusData;
+}
+
+export interface UseTransactionCheckResult {
+    data: TransactionStatusData | null;
+    loading: boolean;
+    error: string | null;
+}
+
 export interface UseRedirectToUPGResult {
     redirect: () => void;
     redirecting: boolean;
