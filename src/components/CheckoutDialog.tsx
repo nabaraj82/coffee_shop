@@ -39,7 +39,7 @@ function CheckoutDialog({
     error: redirectError,
   } = useRedirectToUPG(
     {
-      merchantId: "12",
+      merchantId: "1",
       orderId: "BLN-01",
       merchantName: "Test Company",
       amount: 310,
