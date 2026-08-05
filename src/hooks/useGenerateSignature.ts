@@ -57,7 +57,7 @@ export const useGenerateSignature = (payload: PayloadSignature) => {
 
     useEffect(() => {
         let cancelled = false;
-        if (payload.paymentMethod) {
+        if (payload.paymentMethod && payload.amount > 0) {
             const generate = async () => {
                 setGenerating(true);
                 setError(null);
@@ -77,7 +77,7 @@ export const useGenerateSignature = (payload: PayloadSignature) => {
                 cancelled = true;
             }
         }
-    }, [payload.paymentMethod])
+    }, [payload.paymentMethod, payload.amount])
 
     return { signature, generating, error }
 }

@@ -2,7 +2,7 @@ import { motion, AnimatePresence } from "framer-motion";
 
 import Coffee3 from "../assets/coffee/coffee3.png";
 
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useGetPaymentsMethods } from "../hooks/useGetPaymentsMethods";
 import { useGenerateSignature } from "../hooks/useGenerateSignature";
 import { useRedirectToUPG } from "../hooks/useRedirectToUPG";
@@ -16,17 +16,20 @@ function CheckoutDialog({
   setCheckoutOpen: (value: boolean) => void;
 }) {
   const [paymentMethod, setPaymentMethod] = useState<string | null>(null);
+  const [amount, setAmount] = useState<string>("");
   const { data: paymentMethods, loading, error } = useGetPaymentsMethods();
+
+  const amountValue = Number(amount);
+  const isAmountValid = amount.trim() !== "" && amountValue > 0;
 
   const {
     signature,
-    generating,
     error: signatureError,
   } = useGenerateSignature({
     merchantId: "1",
     orderId: "BLN-01",
     merchantName: "UPG TEST LIVE Merchant",
-    amount: 1,
+    amount: amountValue,
     paymentMethod,
     description: "Payment for order #123",
     merchantCustomerName: "JHON DOE",
@@ -42,7 +45,7 @@ function CheckoutDialog({
       merchantId: "1",
       orderId: "BLN-01",
       merchantName: "UPG TEST LIVE Merchant",
-      amount: 1,
+      amount: amountValue,
       paymentMethod,
       description: "Payment for order #123",
       merchantCustomerName: "JHON DOE",
@@ -96,7 +99,7 @@ function CheckoutDialog({
                 <div>
                   <p className="text-sm text-slate-300">Order total</p>
                   <p className="mt-2 text-2xl font-semibold text-lightOrange">
-                    Rs 310
+                    Rs {isAmountValid ? amountValue : 0}
                   </p>
                 </div>
                 <div className="relative mx-auto md:mx-0">
@@ -109,6 +112,24 @@ function CheckoutDialog({
               </div>
             </div>
             <div className="space-y-5">
+              <div className="space-y-3">
+                <label className="block text-sm font-semibold text-slate-700">
+                  Amount
+                  <input
+                    required
+                    type="number"
+                    min="1"
+                    step="1"
+                    value={amount}
+                    onChange={(event) => setAmount(event.target.value)}
+                    placeholder="Enter amount"
+                    className="mt-2 w-full rounded-3xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-primary"
+                  />
+                </label>
+                {amount.trim() !== "" && !isAmountValid && (
+                  <p className="text-sm text-rose-500">Please enter a valid amount.</p>
+                )}
+              </div>
               <div className="space-y-3">
                 <h3 className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-500">
                   Choose payment method
@@ -149,7 +170,7 @@ function CheckoutDialog({
                 </button>
                 <button
                   onClick={redirect}
-                  disabled={!paymentMethod}
+                  disabled={!paymentMethod || !isAmountValid}
                   className="flex-1 rounded-full bg-gradient-to-r from-primary to-primaryDark px-5 py-3 text-sm font-semibold text-white transition hover:opacity-95 disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   {redirecting ? "Redirecting" : " Confirm Payment"}
