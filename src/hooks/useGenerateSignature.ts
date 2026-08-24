@@ -2,52 +2,35 @@ import { useEffect, useState } from "react";
 import { PayloadSignature } from "../type";
 import { ApiError } from "../utils/ApiError";
 
-async function generateSignature(payload: PayloadSignature, abort: boolean): Promise<string> {
-    const controller = new AbortController();
-    if (abort) {
-        controller.abort();
-    }
-    let timer;
-    if (!abort) {
-        timer = setTimeout(() => controller.abort(), 8000);
-    }
-    try {
-        const response = await fetch(
-            `${import.meta.env.VITE_API_BASE_URL}/api/upg/generate-signature`,
-            {
-                method: "POST",
-                signal: controller.signal,
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(payload)
-            }
-        );
-        if (!response.ok) {
-            let message = `Request failed with status ${response.status}`;
-            try {
-                const errBody = await response.json();
-                message = errBody.message || message;
-            } catch (error) {
+const secretKey = import.meta.env.VITE_UPG_SECRET_KEY;
 
-            }
-            throw new ApiError(message, response.status);
-        }
-        try {
-            const result = await response.json();
-            return result.data.signature;
-        } catch {
-            throw new ApiError('Invalid response format', response.status);
-        }
-    } catch (error: unknown) {
-        if (error instanceof DOMException && error.name === 'AbortError') {
-            throw new ApiError('Request time out', 0);
-        }
-        if (error instanceof ApiError) throw error;
-        throw new ApiError('Network error - check your connection', 0);
-    } finally {
-        clearTimeout(timer)
+async function generateSignature(payload: PayloadSignature): Promise<string> {
+    if (!secretKey) {
+        throw new ApiError("VITE_UPG_SECRET_KEY is not configured", 0);
     }
+
+    const concatenatedValues = Object.keys(payload)
+        .sort()
+        .map((key) => String(payload[key as keyof PayloadSignature] ?? ""))
+        .join("")
+        .replace(/\s/g, "");
+    console.log("concateValue:", concatenatedValues);
+    const key = await crypto.subtle.importKey(
+        "raw",
+        new TextEncoder().encode(secretKey),
+        { name: "HMAC", hash: "SHA-512" },
+        false,
+        ["sign"],
+    );
+    const signature = await crypto.subtle.sign(
+        "HMAC",
+        key,
+        new TextEncoder().encode(concatenatedValues),
+    );
+
+    return Array.from(new Uint8Array(signature), (byte) =>
+        byte.toString(16).padStart(2, "0"),
+    ).join("");
 }
 
 export const useGenerateSignature = (payload: PayloadSignature) => {
@@ -61,12 +44,13 @@ export const useGenerateSignature = (payload: PayloadSignature) => {
             const generate = async () => {
                 setGenerating(true);
                 setError(null);
+                setSignature(null);
                 try {
-                    const result = await generateSignature(payload, cancelled);
+                    const result = await generateSignature(payload);
                     if (!cancelled) setSignature(result)
                 } catch (error: unknown) {
                     if (!cancelled) {
-                        setError(error instanceof ApiError ? error.message : "Unknown error occured");
+                        setError(error instanceof ApiError ? error.message : "Unable to generate signature");
                     }
                 } finally {
                     if (!cancelled) setGenerating(false);
@@ -77,6 +61,8 @@ export const useGenerateSignature = (payload: PayloadSignature) => {
                 cancelled = true;
             }
         }
+        setSignature(null);
+        setGenerating(false);
     }, [payload.paymentMethod, payload.amount])
 
     return { signature, generating, error }

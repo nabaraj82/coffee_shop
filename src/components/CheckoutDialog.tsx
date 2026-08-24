@@ -22,11 +22,8 @@ function CheckoutDialog({
   const amountValue = Number(amount);
   const isAmountValid = amount.trim() !== "" && amountValue > 0;
 
-  const {
-    signature,
-    error: signatureError,
-  } = useGenerateSignature({
-    merchantId: "1",
+  const { signature, error: signatureError } = useGenerateSignature({
+    merchantId: "13",
     orderId: "BLN-01",
     merchantName: "UPG TEST LIVE Merchant",
     amount: amountValue,
@@ -42,7 +39,7 @@ function CheckoutDialog({
     error: redirectError,
   } = useRedirectToUPG(
     {
-      merchantId: "1",
+      merchantId: "13",
       orderId: "BLN-01",
       merchantName: "UPG TEST LIVE Merchant",
       amount: amountValue,
@@ -127,7 +124,9 @@ function CheckoutDialog({
                   />
                 </label>
                 {amount.trim() !== "" && !isAmountValid && (
-                  <p className="text-sm text-rose-500">Please enter a valid amount.</p>
+                  <p className="text-sm text-rose-500">
+                    Please enter a valid amount.
+                  </p>
                 )}
               </div>
               <div className="space-y-3">
