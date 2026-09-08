@@ -1,5 +1,7 @@
 # React + Vite
 
+Create a `.env` file from `.env.example` and set `VITE_MERCHANT_ID` to the merchant ID used by the payment provider.
+
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
 Currently, two official plugins are available:

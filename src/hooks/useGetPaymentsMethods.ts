@@ -2,12 +2,14 @@ import { useEffect, useState } from "react";
 import { PaymentsMethod, UseGetPaymentMethodsResult } from "../type";
 import { ApiError } from "../utils/ApiError";
 
+const merchantId = import.meta.env.VITE_MERCHANT_ID || "1";
+
 const fetchPaymentMethods = async (): Promise<PaymentsMethod[]> => {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), 8000); // 8 seconds timeout
   try {
     const response = await fetch(
-      `${import.meta.env.VITE_API_BASE_URL}/api/upg/payment-methods/13`,
+      `${import.meta.env.VITE_API_BASE_URL}/api/upg/payment-methods/${merchantId}`,
       { signal: controller.signal },
     );
     if (!response.ok) {

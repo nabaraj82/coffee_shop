@@ -8,6 +8,8 @@ import { useGenerateSignature } from "../hooks/useGenerateSignature";
 import { useRedirectToUPG } from "../hooks/useRedirectToUPG";
 import { toast } from "react-toastify";
 
+const merchantId = import.meta.env.VITE_MERCHANT_ID || "1";
+
 function CheckoutDialog({
   checkoutOpen,
   setCheckoutOpen,
@@ -23,7 +25,7 @@ function CheckoutDialog({
   const isAmountValid = amount.trim() !== "" && amountValue > 0;
 
   const { signature, error: signatureError } = useGenerateSignature({
-    merchantId: "13",
+    merchantId,
     orderId: "BLN-01",
     merchantName: "UPG TEST LIVE Merchant",
     amount: amountValue,
@@ -39,7 +41,7 @@ function CheckoutDialog({
     error: redirectError,
   } = useRedirectToUPG(
     {
-      merchantId: "13",
+      merchantId,
       orderId: "BLN-01",
       merchantName: "UPG TEST LIVE Merchant",
       amount: amountValue,
